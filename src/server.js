@@ -12,14 +12,8 @@ const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === "development";
 const server = createServer();
 
-const pipeline = new gstreamer.Pipeline(`
-v4l2src device=/dev/video0 ! video/x-raw, width=1920, height=1080, framerate=30/1, format=YUY2 ! nvvidconv ! video/x-raw(memory:NVMM), format=NV12 ! \
-  nvv4l2h265enc maxperf-enable=1 bitrate=5000000 control-rate=0 iframeinterval=60 preset-level=3 profile=0 insert-sps-pps=1 MeasureEncoderLatency=1 ! video/x-h265, stream-format=byte-stream ! \
-  h265parse ! mpegtsmux alignment=7 name=mux ! srtserversink name=srt uri="srt://${process.env.SRT_IP}:1935?streamid=input/live/cam" latency=300  \
-  alsasrc device=hw:2 ! audioconvert ! opusenc audio-type=voice ! mux.
-`);
-
 const stream = {
+	bitrate: 5,
 	state: "off",
 	stats: {
 		"bytes-sent": 0,
@@ -29,6 +23,17 @@ const stream = {
 		"send-rate-mbps": 0,
 	},
 };
+
+const pipeline = new gstreamer.Pipeline(`
+v4l2src device=/dev/video0 ! video/x-raw, width=1920, height=1080, framerate=30/1, format=YUY2 ! nvvidconv ! video/x-raw(memory:NVMM), format=NV12 ! \
+  omxh265enc name=enc bitrate=${Math.floor(
+		stream.bitrate * 1000 * 1000
+  )} control-rate=2 iframeinterval=-1 preset-level=2 SliceIntraRefreshEnable=true SliceIntraRefreshInterval=60 ! video/x-h265, stream-format=byte-stream ! \
+  h265parse ! mpegtsmux alignment=7 name=mux ! srtserversink name=srt uri="srt://${
+		process.env.SRT_IP
+  }:1935?streamid=input/live/cam" latency=300  \
+  alsasrc device=hw:2 ! audioconvert ! opusenc audio-type=voice ! mux.
+`);
 
 const updateStream = (obj) => {
 	Object.assign(stream, obj);
@@ -75,7 +80,10 @@ const wss = new WebSocket.Server({ path: "/ws", server });
 wss.on("connection", (ws) => {
 	ws.on("message", (msgJson) => {
 		const msg = JSON.parse(msgJson);
-		if (msg.type === "startStream") {
+		if (msg.type === "setBitrate") {
+			pipeline.findChild("enc").bitrate = msg.data.bitrate * 1000 * 1000;
+			updateStream({ bitrate: msg.data.bitrate });
+		} else if (msg.type === "startStream") {
 			pipeline.play();
 			updateStream({ state: "on" });
 		} else if (msg.type === "stopStream") {

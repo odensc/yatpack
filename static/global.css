@@ -12,3 +12,15 @@ body {
 		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 	font-size: 16px;
 }
+
+.button {
+	align-self: flex-start;
+	background: #63f542;
+	border: 0;
+	border-radius: 0.25rem;
+	display: flex;
+	font-family: inherit;
+	font-size: inherit;
+	margin-top: auto;
+	padding: 0.35rem;
+}

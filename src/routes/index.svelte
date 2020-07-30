@@ -1,13 +1,28 @@
 <script>
-	import { onMount } from "svelte";
 	import { get } from "svelte/store";
 	import { stream, send } from "../store";
 
 	const toggleStream = () => {
 		const { state } = get(stream);
-		if (state === "off") send({ type: "startStream" });
-		else if (state === "on") send({ type: "stopStream" });
+		if (state === "off") {
+			send({ type: "startStream" });
+		} else if (state === "on") {
+			if (confirm("Are you sure?")) send({ type: "stopStream" });
+		}
 	};
+
+	const onBitrateInput = e => {
+		const bitrate = get(stream).bitrate;
+		newBitrate =
+			e.target.valueAsNumber === bitrate ? 0 : e.target.valueAsNumber;
+	};
+
+	const updateBitrate = () => {
+		send({ type: "setBitrate", data: { bitrate: newBitrate } });
+		newBitrate = 0;
+	};
+
+	let newBitrate = 0;
 </script>
 
 <style lang="scss">
@@ -25,7 +40,21 @@
 	}
 
 	.stats p {
+		display: flex;
+		flex-direction: column;
 		margin-bottom: 0.5rem;
+	}
+
+	.stats__name {
+		font-weight: bold;
+	}
+
+	.stats__bitrate input {
+		margin: 0.25rem 0;
+	}
+
+	.stats__bitrate .strike {
+		text-decoration: line-through;
 	}
 
 	.stats__state {
@@ -39,20 +68,14 @@
 	}
 
 	.toggle-stream {
-		align-self: flex-start;
-		background: #63f542;
-		border: 0;
-		border-radius: 0.25rem;
-		display: flex;
-		font-family: inherit;
-		font-size: inherit;
+		font-family: monospace;
 		margin-top: auto;
-		padding: 0.5rem;
 	}
 
 	.toggle-stream.on {
 		background: #c52027;
 		color: #fff;
+		font-weight: bold;
 	}
 </style>
 
@@ -63,13 +86,35 @@
 <div class="left-panel">
 	<div class="stats">
 		<p class="stats__state" class:on={$stream.state === "on"}>State: {$stream.state}</p>
-		<p><strong>Packets lost:</strong> <br /> {$stream.stats["packets-sent-lost"]}/{$stream.stats["packets-sent"]} ({(($stream.stats["packets-sent-lost"] / $stream.stats["packets-sent"] || 1) * 100).toFixed(1)}%)</p>
-		<p><strong>RTT:</strong> <br /> {$stream.stats["rtt-ms"].toFixed(1)}ms</p>
-		<p><strong>Send rate:</strong> <br /> {$stream.stats["send-rate-mbps"].toFixed(1)}Mbps</p>
-		<p><strong>Data usage:</strong> <br /> {($stream.stats["bytes-sent"] / 1000 / 1000 / 1000).toFixed(1)}GB</p>
+		<p>
+			<span class="stats__name">Packets lost:</span>
+			<span class="stats__value">
+				{$stream.stats["packets-sent-lost"]}/{$stream.stats["packets-sent"]}
+				({(($stream.stats["packets-sent-lost"] / $stream.stats["packets-sent"] || 1) * 100).toFixed(1)}%)
+			</span>
+		</p>
+		<p>
+			<span class="stats__name">RTT:</span>
+			<span class="stats__value">{$stream.stats["rtt-ms"].toFixed(1)}ms</span>
+		<p>
+			<span class="stats__name">Send rate:</span>
+			<span class="stats__value">{$stream.stats["send-rate-mbps"].toFixed(1)}Mbps</span>
+		<p>
+			<span class="stats__name">Data usage:</span>
+			<span class="stats__value">{($stream.stats["bytes-sent"] / 1000 / 1000 / 1000).toFixed(1)}GB</span>
+		
+		<p class="stats__bitrate">
+			<span class="stats__name">Bitrate:</span>
+			<span class="stats__value"><span class:strike={newBitrate}>{$stream.bitrate}Mbps</span> <span hidden={!newBitrate}>{newBitrate}Mbps</span></span>
+			<input type="range" value={newBitrate || $stream.bitrate} on:input={onBitrateInput} min=1 max=8>
+
+			{#if newBitrate}
+			<button class="button" on:click={updateBitrate}>Update bitrate</button>
+			{/if}
+		</p>
 	</div>
 
-	<button class="toggle-stream" on:click={toggleStream} class:on={$stream.state === "on"}>{$stream.state === "on" ? "Stop stream" : "Start stream"}</button>
+	<button class="button toggle-stream" on:click={toggleStream} class:on={$stream.state === "on"}>{$stream.state === "on" ? "Stop stream" : "Start stream"}</button>
 </div>
 
 <p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>

@@ -3,6 +3,7 @@ import { writable } from "svelte/store";
 let ws;
 
 export const stream = writable({
+	bitrate: 5,
 	state: "off",
 	stats: {
 		"bytes-sent": 0,
@@ -19,7 +20,7 @@ export const send = (message) => {
 
 if (typeof window !== "undefined") {
 	ws = new WebSocket(`ws://${location.host}/ws`);
-
+	window.ws = ws;
 	ws.addEventListener("message", (e) => {
 		const msg = JSON.parse(e.data);
 
