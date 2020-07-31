@@ -1,18 +1,9 @@
 import { writable } from "svelte/store";
+import { stream as defaultState } from "./server/state";
 
 let ws;
 
-export const stream = writable({
-	bitrate: 5,
-	state: "off",
-	stats: {
-		"bytes-sent": 0,
-		"packets-sent": 0,
-		"packets-sent-lost": 0,
-		"rtt-ms": 0,
-		"send-rate-mbps": 0,
-	},
-});
+export const stream = writable(defaultState);
 
 export const send = (message) => {
 	if (ws.readyState <= 1) ws.send(JSON.stringify(message));

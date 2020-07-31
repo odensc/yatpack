@@ -3,41 +3,25 @@
 	import { get } from "svelte/store";
 	import { stream, send } from "../store";
 
+	let noSleep;
+
 	let newBitrate = 0;
-	let rollingPacketLoss = "0.0";
 
-	onMount(() => {
-		let currentPacketsSent = 0;
-		let currentPacketsLost = 0;
-		let lastPacketsSent = 0;
-		let lastPacketsLost = 0;
-
-		stream.subscribe(value => {
-			currentPacketsSent = value.stats["packets-sent"];
-			currentPacketsLost = value.stats["packets-sent-lost"];
-		});
-
-		setInterval(() => {
-			const packetsLostDelta = currentPacketsLost - lastPacketsLost;
-			const packetsSentDelta = currentPacketsSent - lastPacketsSent;
-
-			rollingPacketLoss = (
-				packetsLostDelta /
-				(packetsSentDelta || 1) *
-				100
-			).toFixed(1);
-
-			lastPacketsSent = currentPacketsSent;
-			lastPacketsLost = currentPacketsLost;
-		}, 10000);
+	onMount(async () => {
+		const { default: NoSleep } = await import("nosleep.js");
+		noSleep = new NoSleep();
 	});
 
 	const toggleStream = () => {
 		const { state } = get(stream);
 		if (state === "off") {
 			send({ type: "startStream" });
+			noSleep.enable();
 		} else if (state === "on") {
-			if (confirm("Are you sure?")) send({ type: "stopStream" });
+			if (!confirm("Are you sure?")) return;
+
+			send({ type: "stopStream" });
+			noSleep.disable();
 		}
 	};
 
@@ -111,15 +95,15 @@
 			<span class="stats__value">
 				{$stream.stats["packets-sent-lost"]}/{$stream.stats["packets-sent"]}
 				<br />
-				({(($stream.stats["packets-sent-lost"] / ($stream.stats["packets-sent"] || 1)) * 100).toFixed(1)}%, last 10s: {rollingPacketLoss}%)
+				({(($stream.stats["packets-sent-lost"] / ($stream.stats["packets-sent"] || 1)) * 100).toFixed(1)}%, last 10s: {$stream.stats.rollingPacketLoss.toFixed(0)}%)
 			</span>
 		</p>
 		<p>
 			<span class="stats__name">RTT:</span>
 			<span class="stats__value">{$stream.stats["rtt-ms"].toFixed(1)}ms</span>
 		<p>
-			<span class="stats__name">Send rate:</span>
-			<span class="stats__value">{$stream.stats["send-rate-mbps"].toFixed(1)}Mbps</span>
+			<span class="stats__name">Bandwidth:</span>
+			<span class="stats__value">{$stream.stats["bandwidth-mbps"].toFixed(1)}Mbps</span>
 		<p>
 			<span class="stats__name">Data usage:</span>
 			<span class="stats__value">{($stream.stats["bytes-sent"] / 1000 / 1000 / 1000).toFixed(1)}GB</span>
@@ -127,11 +111,9 @@
 		<p class="stats__bitrate">
 			<span class="stats__name">Bitrate:</span>
 			<span class="stats__value">{newBitrate || $stream.bitrate}Mbps</span>
-			<input type="range" value={newBitrate || $stream.bitrate} on:input={onBitrateInput} on:change={updateBitrate} min=1 max=8>
+			<input type="range" value={newBitrate || $stream.bitrate} on:input={onBitrateInput} on:change={updateBitrate} min=0.5 max=8 step={0.5}>
 		</p>
 	</div>
 
 	<button class="button toggle-stream" on:click={toggleStream} class:on={$stream.state === "on"}>{$stream.state === "on" ? "Stop stream" : "Start stream"}</button>
 </div>
-
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
