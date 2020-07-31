@@ -26,7 +26,7 @@ const stream = {
 
 const pipeline = new gstreamer.Pipeline(`
 v4l2src device=/dev/video0 ! video/x-raw, width=1920, height=1080, framerate=30/1, format=YUY2 ! nvvidconv ! video/x-raw(memory:NVMM), format=NV12 ! \
-  omxh265enc name=enc bitrate=${Math.floor(
+  omxh265enc MeasureEncoderLatency=1 name=enc bitrate=${Math.floor(
 		stream.bitrate * 1000 * 1000
   )} control-rate=2 iframeinterval=-1 preset-level=2 SliceIntraRefreshEnable=true SliceIntraRefreshInterval=60 ! video/x-h265, stream-format=byte-stream ! \
   h265parse ! mpegtsmux alignment=7 name=mux ! srtserversink name=srt uri="srt://${

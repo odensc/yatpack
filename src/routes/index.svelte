@@ -1,6 +1,36 @@
 <script>
+	import { onMount } from "svelte";
 	import { get } from "svelte/store";
 	import { stream, send } from "../store";
+
+	let newBitrate = 0;
+	let rollingPacketLoss = "0.0";
+
+	onMount(() => {
+		let currentPacketsSent = 0;
+		let currentPacketsLost = 0;
+		let lastPacketsSent = 0;
+		let lastPacketsLost = 0;
+
+		stream.subscribe(value => {
+			currentPacketsSent = value.stats["packets-sent"];
+			currentPacketsLost = value.stats["packets-sent-lost"];
+		});
+
+		setInterval(() => {
+			const packetsLostDelta = currentPacketsLost - lastPacketsLost;
+			const packetsSentDelta = currentPacketsSent - lastPacketsSent;
+
+			rollingPacketLoss = (
+				packetsLostDelta /
+				(packetsSentDelta || 1) *
+				100
+			).toFixed(1);
+
+			lastPacketsSent = currentPacketsSent;
+			lastPacketsLost = currentPacketsLost;
+		}, 10000);
+	});
 
 	const toggleStream = () => {
 		const { state } = get(stream);
@@ -11,18 +41,12 @@
 		}
 	};
 
-	const onBitrateInput = e => {
-		const bitrate = get(stream).bitrate;
-		newBitrate =
-			e.target.valueAsNumber === bitrate ? 0 : e.target.valueAsNumber;
-	};
+	const onBitrateInput = e => (newBitrate = e.target.valueAsNumber);
 
 	const updateBitrate = () => {
 		send({ type: "setBitrate", data: { bitrate: newBitrate } });
 		newBitrate = 0;
 	};
-
-	let newBitrate = 0;
 </script>
 
 <style lang="scss">
@@ -51,10 +75,6 @@
 
 	.stats__bitrate input {
 		margin: 0.25rem 0;
-	}
-
-	.stats__bitrate .strike {
-		text-decoration: line-through;
 	}
 
 	.stats__state {
@@ -90,7 +110,8 @@
 			<span class="stats__name">Packets lost:</span>
 			<span class="stats__value">
 				{$stream.stats["packets-sent-lost"]}/{$stream.stats["packets-sent"]}
-				({(($stream.stats["packets-sent-lost"] / $stream.stats["packets-sent"] || 1) * 100).toFixed(1)}%)
+				<br />
+				({(($stream.stats["packets-sent-lost"] / ($stream.stats["packets-sent"] || 1)) * 100).toFixed(1)}%, last 10s: {rollingPacketLoss}%)
 			</span>
 		</p>
 		<p>
@@ -105,12 +126,8 @@
 		
 		<p class="stats__bitrate">
 			<span class="stats__name">Bitrate:</span>
-			<span class="stats__value"><span class:strike={newBitrate}>{$stream.bitrate}Mbps</span> <span hidden={!newBitrate}>{newBitrate}Mbps</span></span>
-			<input type="range" value={newBitrate || $stream.bitrate} on:input={onBitrateInput} min=1 max=8>
-
-			{#if newBitrate}
-			<button class="button" on:click={updateBitrate}>Update bitrate</button>
-			{/if}
+			<span class="stats__value">{newBitrate || $stream.bitrate}Mbps</span>
+			<input type="range" value={newBitrate || $stream.bitrate} on:input={onBitrateInput} on:change={updateBitrate} min=1 max=8>
 		</p>
 	</div>
 
