@@ -93,21 +93,23 @@
 		<p>
 			<span class="stats__name">Packets lost:</span>
 			<span class="stats__value">
-				{$stream.stats["packets-sent-lost"]}/{$stream.stats["packets-sent"]}
+				{$stream.stats.packetsLost}/{$stream.stats.packetsSent}
 				<br />
-				({(($stream.stats["packets-sent-lost"] / ($stream.stats["packets-sent"] || 1)) * 100).toFixed(1)}%, last 10s: {$stream.stats.rollingPacketLoss.toFixed(0)}%)
+				({(($stream.stats.packetsLost / ($stream.stats.packetsSent || 1)) * 100).toFixed(1)}%, last 10s: {$stream.stats.rollingPacketLoss.toFixed(1)}%)
 			</span>
 		</p>
-		<p>
+		<!-- <p>
 			<span class="stats__name">RTT:</span>
 			<span class="stats__value">{$stream.stats["rtt-ms"].toFixed(1)}ms</span>
+		</p>
 		<p>
 			<span class="stats__name">Bandwidth:</span>
 			<span class="stats__value">{$stream.stats["bandwidth-mbps"].toFixed(1)}Mbps</span>
+		</p>
 		<p>
 			<span class="stats__name">Data usage:</span>
 			<span class="stats__value">{($stream.stats["bytes-sent"] / 1000 / 1000 / 1000).toFixed(1)}GB</span>
-		
+		</p> -->
 		<p class="stats__bitrate">
 			<span class="stats__name">Bitrate:</span>
 			<span class="stats__value">{newBitrate || $stream.bitrate}Mbps</span>

@@ -7,22 +7,26 @@ const STATS_REGEX = new RegExp(/([^=]+)=\([^)]+\)(.+)/);
 const STATS_POLL_MS = 250;
 
 const parseStats = (str) => {
-	// e.g. application/x-srt-statistics, packets-sent=(gint64)6450, ...
+	// e.g. rist/x-sender-stats, sent-original-packets=(guint64)0, ...
 	const stats = {};
+	console.log(str);
 	str.split(", ")
 		.slice(1)
 		.forEach((prop) => {
 			const groups = prop.match(STATS_REGEX);
-			stats[groups[1]] = parseFloat(groups[2]);
+			stats[groups[1]] = groups[2];
 		});
 
-	return stats;
+	return {
+		packetsSent: stats["sent-original-packets"],
+		packetsLost: stats["sent-retransmitted-packets"],
+	};
 };
 
 setInterval(() => {
 	if (stream.state === "off") return;
 
-	const stats = parseStats(pipeline.findChild("srt").stats);
+	const stats = parseStats(pipeline.findChild("rist").stats);
 	updateStream({
 		stats: {
 			...stats,

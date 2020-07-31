@@ -1,6 +1,6 @@
 export const getRollingPacketLoss = (stats) => {
-	currentPacketsSent = stats["packets-sent"];
-	currentPacketsLost = stats["packets-sent-lost"];
+	currentPacketsSent = stats.packetsSent;
+	currentPacketsLost = stats.packetsLost;
 
 	return rollingPacketLoss;
 };
