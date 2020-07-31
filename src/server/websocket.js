@@ -10,6 +10,7 @@ const onMessage = (msgJson) => {
 		updateStream({ bitrate: msg.data.bitrate });
 	} else if (msg.type === "startStream") {
 		pipeline.play();
+		updateStream({ state: "on" });
 	} else if (msg.type === "stopStream") {
 		pipeline.stop();
 		updateStream({ state: "off" });
