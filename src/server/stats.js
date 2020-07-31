@@ -9,7 +9,6 @@ const STATS_POLL_MS = 250;
 const parseStats = (str) => {
 	// e.g. rist/x-sender-stats, sent-original-packets=(guint64)0, ...
 	const stats = {};
-	console.log(str);
 	str.split(", ")
 		.slice(1)
 		.forEach((prop) => {
