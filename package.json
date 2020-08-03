@@ -5,8 +5,8 @@
 	"private": true,
 	"scripts": {
 		"dev": ". ./env.sh && sapper dev",
-		"build": "sapper build --legacy",
-		"export": "sapper export --legacy",
+		"build": ". ./env.sh && sapper build --legacy",
+		"export": ". ./env.sh && sapper export --legacy",
 		"start": ". ./env.sh && node __sapper__/build",
 		"cy:run": "cypress run",
 		"cy:open": "cypress open",
