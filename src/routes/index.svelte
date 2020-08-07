@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 	import { get } from "svelte/store";
-	import { stream, send } from "../store";
+	import { connected, stream, send } from "../store";
 
 	let noSleep;
 
@@ -44,7 +44,6 @@
 	.stats {
 		display: flex;
 		flex-direction: column;
-		font-family: monospace;
 	}
 
 	.stats p {
@@ -54,7 +53,12 @@
 	}
 
 	.stats__name {
+		font-size: 1.2rem;
 		font-weight: bold;
+	}
+
+	.stats__value {
+		font-family: monospace;
 	}
 
 	.stats__bitrate input {
@@ -63,7 +67,7 @@
 
 	.stats__state {
 		color: #c52027;
-		font-size: 1.5rem;
+		font-size: 1.75rem;
 		font-weight: bold;
 	}
 
@@ -72,7 +76,6 @@
 	}
 
 	.toggle-stream {
-		font-family: monospace;
 		margin-top: auto;
 	}
 
@@ -81,11 +84,32 @@
 		color: #fff;
 		font-weight: bold;
 	}
+
+	.connecting-overlay {
+		align-items: center;
+		backdrop-filter: blur(4px);
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		font-size: 2rem;
+		font-weight: bold;
+		height: 100vh;
+		justify-content: center;
+		position: absolute;
+		width: 100vw;
+	}
+
+	.connecting-overlay.connected {
+		display: none;
+	}
 </style>
 
 <svelte:head>
 	<title>YATpack</title>
 </svelte:head>
+
+<div class="connecting-overlay" class:connected={$connected}>
+	Connecting to pack...
+</div>
 
 <div class="left-panel">
 	<div class="stats">

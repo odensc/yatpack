@@ -3,6 +3,8 @@ import { stream as defaultState } from "./server/state";
 
 let ws;
 
+export const connected = writable(false);
+
 export const stream = writable(defaultState);
 
 export const send = (message) => {
@@ -11,7 +13,8 @@ export const send = (message) => {
 
 if (typeof window !== "undefined") {
 	ws = new WebSocket(`ws://${location.host}/ws`);
-	window.ws = ws;
+	ws.addEventListener("open", () => connected.set(true));
+	ws.addEventListener("close", () => connected.set(false));
 	ws.addEventListener("message", (e) => {
 		const msg = JSON.parse(e.data);
 

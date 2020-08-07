@@ -8,8 +8,7 @@ html,
 body {
 	background: #012630;
 	color: #fff;
-	font-family: Roboto, -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
-		Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+	font-family: Nexa;
 	font-size: 16px;
 }
 
@@ -23,4 +22,20 @@ body {
 	font-size: inherit;
 	margin-top: auto;
 	padding: 0.35rem;
+}
+
+@font-face {
+	font-family: "Nexa";
+	src: url("/Nexa-Light.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: 300;
+}
+
+@font-face {
+	font-family: "Nexa";
+	src: url("/Nexa-Bold.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: bold;
 }

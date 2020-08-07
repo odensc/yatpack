@@ -1,0 +1,11 @@
+[Unit]
+Description=Sapper server
+After=network.target
+
+[Service]
+ExecStart=/home/oden/yatpack/start.sh
+WorkingDirectory=/home/oden/yatpack
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
