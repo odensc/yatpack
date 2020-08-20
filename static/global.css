@@ -8,7 +8,7 @@ html,
 body {
 	background: #012630;
 	color: #fff;
-	font-family: Nexa;
+	font-family: Comfortaa;
 	font-size: 16px;
 }
 
@@ -25,16 +25,16 @@ body {
 }
 
 @font-face {
-	font-family: "Nexa";
-	src: url("/Nexa-Light.woff2") format("woff2");
+	font-family: "Comfortaa";
+	src: url("/comfortaa-v29-latin-300.woff2") format("woff2");
 	font-display: swap;
 	font-style: normal;
-	font-weight: 300;
+	font-weight: normal;
 }
 
 @font-face {
-	font-family: "Nexa";
-	src: url("/Nexa-Bold.woff2") format("woff2");
+	font-family: "Comfortaa";
+	src: url("/comfortaa-v29-latin-700.woff2") format("woff2");
 	font-display: swap;
 	font-style: normal;
 	font-weight: bold;

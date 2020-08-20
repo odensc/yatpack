@@ -55,6 +55,7 @@
 	.stats__name {
 		font-size: 1.2rem;
 		font-weight: bold;
+		margin-bottom: 0.2rem;
 	}
 
 	.stats__value {
