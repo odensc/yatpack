@@ -1,3 +1,0 @@
-meson --prefix=/home/oden/gst-1.17.2 -Dbad=enabled -Dgst-plugins-bad:srt=enabled -Drtsp_server=disabled -Dlibav=disabled -Dgst-plugins-base:opus=enabled -Dlibnice=disabled -Dgst-examples=disabled -Ddoc=disabled -Dexamples=disabled -Dtests=disabled builddir
-ninja -C builddir
-meson install -C builddir
