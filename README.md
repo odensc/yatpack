@@ -10,11 +10,12 @@ Code and resources for IRL streaming with the [NVIDIA Jetson Nano](https://devel
     -   [Full GStreamer pipeline](https://github.com/odensc/yatpack/blob/master/src/server/pipeline.js)
 -   MPEG-TS container over [SRT](https://www.srtalliance.org/)
     -   Default 300ms latency (modify pipeline.js to configure)
--   Pre-configured Docker container
+-   Dockerized server component
     -   Runs srt-live-server with sane config
     -   Runs Node.js watchdog server that can swap between scenes on RIP using obs-websocket
--   Web UI for starting/stopping stream, statistics, configuring bitrate
-    -   Svelte PWA
+-   Dockerized client component
+    -   Web UI for starting/stopping stream, statistics, configuring settings
+    -   PWA, so you can add it to your home screen for easy access
 
 ## Setup
 
@@ -39,7 +40,7 @@ You'll want:
 
 ### Software
 
-**WIP WIP WIP**
+Both the client and server are distributed as
 
 #### 1. Install GStreamer dependencies and download pre-built GStreamer binaries
 
@@ -56,7 +57,6 @@ sudo apt-get install libgstreamer1.0-dev \
   libgstreamer-plugins-good1.0-dev \
   libgstreamer-plugins-bad1.0-dev
 
-cd ~
 curl -OL https://github.com/odensc/yatpack/releases/download/0.0.1/gst.tar.gz
 tar xvzf gst.tar.gz
 cp /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstnv* /usr/lib/aarch64-linux-gnu/gstreamer-1.0/libgstomx.so \

@@ -26,8 +26,7 @@ COPY yarn.lock /app/
 WORKDIR /app
 RUN yarn --frozen-lockfile --production
 
-COPY src/ /app/
-COPY start.sh /app/
+COPY . /app/
 
 COPY --from=build /usr/local/bin/srt-* /usr/local/bin/
 COPY --from=build /usr/local/lib64/libsrt* /usr/local/lib64/

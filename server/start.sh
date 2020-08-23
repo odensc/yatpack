@@ -1,6 +1,6 @@
 #!/bin/sh
 cd /app
 
-yarn start &
+sls -c /etc/sls/sls.conf &
 
-sls -c /etc/sls/sls.conf
+yarn start

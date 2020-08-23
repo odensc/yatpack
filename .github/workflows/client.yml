@@ -1,4 +1,4 @@
-name: Build server Docker image
+name: Build client Docker image
 
 on:
   push:
@@ -12,10 +12,11 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build the Docker image
         env:
-          CI_REGISTRY_IMAGE: odensc/yatpack-server
+          CI_REGISTRY_IMAGE: odensc/yatpack-client
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
-          cd server
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes -c yes
+          cd client
           docker login docker.pkg.github.com -u odensc -p $DOCKER_TOKEN
           docker build -t $CI_REGISTRY_IMAGE:$GITHUB_SHA .
           docker push $CI_REGISTRY_IMAGE:$GITHUB_SHA
