@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build the Docker image
+        env:
+          CI_REGISTRY_IMAGE: docker.pkg.github.com/odensc/yatpack/yatpack
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd watchdog
+          docker login docker.pkg.github.com -u odensc -p $GITHUB_TOKEN
+          docker build -t $CI_REGISTRY_IMAGE:$GITHUB_SHA .
+          docker push $CI_REGISTRY_IMAGE:$GITHUB_SHA
+          docker tag $CI_REGISTRY_IMAGE:$GITHUB_SHA $CI_REGISTRY_IMAGE:latest
+          docker push $CI_REGISTRY_IMAGE:latest

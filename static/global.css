@@ -1,0 +1,41 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	background: #012630;
+	color: #fff;
+	font-family: Comfortaa;
+	font-size: 16px;
+}
+
+.button {
+	align-self: flex-start;
+	background: #63f542;
+	border: 0;
+	border-radius: 0.25rem;
+	display: flex;
+	font-family: inherit;
+	font-size: inherit;
+	margin-top: auto;
+	padding: 0.35rem;
+}
+
+@font-face {
+	font-family: "Comfortaa";
+	src: url("/comfortaa-v29-latin-300.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: normal;
+}
+
+@font-face {
+	font-family: "Comfortaa";
+	src: url("/comfortaa-v29-latin-700.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: bold;
+}
