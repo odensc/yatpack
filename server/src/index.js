@@ -42,16 +42,22 @@ app.post("/sls/stats", (req, res) => {
 	const stats = req.body.find((stream) => stream.url === "input/live/pack");
 	if (stats) {
 		if (stats.kbitrate < 200) {
-			obs.send("SetCurrentScene", { "scene-name": "Disconnected" });
+			obs.send("SetCurrentScene", {
+				"scene-name": process.env.SCENE_NAME_DISCONNECTED,
+			});
 			console.log(
 				"[obs] Scene: Disconnected, reason: bitrate below 200k"
 			);
 		} else {
-			obs.send("SetCurrentScene", { "scene-name": "Connected" });
+			obs.send("SetCurrentScene", {
+				"scene-name": process.env.SCENE_NAME_CONNECTED,
+			});
 			console.log("[obs] Scene: Connected");
 		}
 	} else {
-		obs.send("SetCurrentScene", { "scene-name": "Disconnected" });
+		obs.send("SetCurrentScene", {
+			"scene-name": process.env.SCENE_NAME_DISCONNECTED,
+		});
 		console.log("[obs] Scene: Disconnected, reason: no stream");
 	}
 

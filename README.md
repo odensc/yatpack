@@ -29,46 +29,46 @@ You'll want:
 
 -   a Jetson Nano developer kit (any revision);
     -   Be sure to look around, I got one in an eBay auction for ~\$80.
--   a UVC capture card compatible with Linux/V4L2, capable of 1080p30 uncompressed @ YUV 4:2:2
-    -   I'm currently using [this one](https://smile.amazon.com/gp/product/B0869LCMCG/) - [more info](https://twitter.com/marcan42/status/1281266315831808001)
-    -   [MJPEG cards](https://smile.amazon.com/gp/product/B088CWQGN5) may work but lower quality and untested - will need to change GStreamer pipeline to use nvjpegdec
+-   a UVC capture card compatible with Linux/V4L2, capable of at least 1080p30 uncompressed @ YUV 4:2:2
+    -   I'm currently using a Cam Link 4K, but other cards should work if you can change the GStreamer pipeline accordingly.
 -   a high quality USB power bank that supports 5v @ at least 3A
-    -   I'm currently using [this one](https://smile.amazon.com/gp/product/B082PGS78L). You should look at the spec sheet / manual to confirm max current. Some will additionally claim 3A but then crap out after a bit and you'll never know why it's crashing. (from experience)
+    -   I'm currently using [this one](https://smile.amazon.com/gp/product/B082PGS78L). You should look at the spec sheet / manual to confirm max current. Additionally, some will claim 3A but then shut off after sustained load.
 -   USB WiFi adapter, or cable for phone to USB tether
 -   Micro-USB cable (ideally as thick and short as possible to prevent voltage drop)
 -   MicroSD card with Jetson image flashed, at least 32GB
 
 ### Software
 
-Both the client and server (technically optional) are distributed as Docker images.
+Both the client and server are distributed as Docker images.
 
 #### 1. Client
 
-The Jetson Nano image should come with Docker pre-installed, so simply run the below commands:
+The Jetson Nano SD card image should come with Docker pre-installed, so simply run the below commands on your Nano. (you'll want to change `SRT_IP` to your server)
 
 ```bash
 sudo systemctl enable --now docker
 sudo docker run --restart always --name yatpack-client \
   --ipc=host --runtime nvidia \
-  --device /dev/snd --device /dev/video0 -p 3000:3000 \
-  -e SRT_IP=box.odensc.me:1935 \
+  --device /dev/snd --device /dev/video0 -p 80:80 -e PORT=80 \
+  -e SRT_IP=my.server.com:1935 \
   odensc/yatpack-client
 ```
 
-#### 2. Set up Svelte server
+The web UI should then be accessible at the IP of your Nano.
 
-**TODO install node.js, yarn, build dependencies, etc...**
+#### 2. Server
+
+The server component is technically optional but strongly recommended, as it provides an SRT server and auto scene swapping via `obs-websocket`.
+If you don't use it, you'll need to set up your own SRT server (at least).
+
+You'll need a Linux server with Docker installed. Then run the below commands:
 
 ```bash
-git clone https://github.com/odensc/yatpack
-cd yatpack
-yarn
-
-# set correct environment variable for SRT server
-nano env.sh
-
-yarn build
-yarn start
+sudo systemctl enable --now docker
+sudo docker run --restart always --name yatpack-server -p 1935:1935/udp \
+  -e OBS_ADDRESS=10.0.0.2:4444 -e OBS_PASSWORD=hunter2 \
+  -e SCENE_NAME_CONNECTED=Connected -e SCENE_NAME_DISCONNECTED=Disconnected \
+  odensc/yatpack-server
 ```
 
-#### 3.
+You should install [obs-websocket](https://github.com/Palakis/obs-websocket) on your OBS machine and configure it to require a password, then edit the above environment variables accordingly.
