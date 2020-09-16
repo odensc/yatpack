@@ -43,6 +43,8 @@ Both the client and server are distributed as Docker images.
 
 #### 1. Client
 
+First you'll want to put your Nano into 5W mode to reduce power usage and prevent crashes. Edit `/etc/nvpmodel.conf` and change `PM_CONFIG DEFAULT=` to 1.
+
 The Jetson Nano SD card image should come with Docker pre-installed, so simply run the below commands on your Nano. (you'll want to change `SRT_IP` to your server)
 
 ```bash
@@ -61,7 +63,9 @@ The web UI should then be accessible at the IP of your Nano.
 The server component is technically optional but strongly recommended, as it provides an SRT server and auto scene swapping via `obs-websocket`.
 If you don't use it, you'll need to set up your own SRT server (at least).
 
-You'll need a Linux server with Docker installed. Then run the below commands:
+You'll need a Linux server with Docker installed. You can also use Windows w/ Docker Desktop but will need to run the commands via WSL2.
+
+Run the below commands:
 
 ```bash
 sudo systemctl enable --now docker
