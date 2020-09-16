@@ -2,7 +2,6 @@ FROM nvcr.io/nvidia/l4t-base:r32.4.3
 ENV LD_LIBRARY_PATH=/usr/local/lib:/app/gst/lib/aarch64-linux-gnu
 ENV PATH=/app/gst/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV GST_PLUGIN_PATH=/app/gst/lib/aarch64-linux-gnu/gstreamer-1.0
-ENV GST_PLUGIN_SYSTEM_PATH=/app/gst/lib/aarch64-linux-gnu/gstreamer-1.0
 
 WORKDIR /app
 
@@ -14,7 +13,7 @@ RUN apt-get install -y nodejs
 RUN npm install -g yarn
 
 # Install custom GStreamer build
-RUN curl -OL https://github.com/odensc/yatpack/releases/download/0.0.1/gst.tar.gz
+RUN curl -OL https://github.com/odensc/yatpack/releases/download/0.0.1/gst.tar.gz # 0.0.1
 RUN tar xvzf gst.tar.gz
 RUN rm gst.tar.gz
 
