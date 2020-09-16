@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 app.post("/sls/event", (req, res) => {
 	/*
 		{
-			on_event: 'on_connect',
+			on_event: 'on_connect' | 'on_close',
 			role_name: 'publisher',
 			srt_url: 'input/live/pack',
 			remote_ip: '172.17.0.1',
