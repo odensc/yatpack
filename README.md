@@ -5,17 +5,14 @@ Code and resources for IRL streaming with the [NVIDIA Jetson Nano](https://devel
 ## Random tech details
 
 -   HEVC video encode + Opus audio
-    -   HEVC: [Slow preset](https://docs.nvidia.com/jetson/l4t/index.html#page/Tegra%2520Linux%2520Driver%2520Package%2520Development%2520Guide%2Faccelerated_gstreamer.html%23wwpID0E0CU0HA), Two-pass CBR, Intra Refresh, Bitrate customizable via UI
-    -   Opus: voice profile, 64k
     -   [Full GStreamer pipeline](https://github.com/odensc/yatpack/blob/master/src/server/pipeline.js)
--   MPEG-TS container over [SRT](https://www.srtalliance.org/)
-    -   Default 300ms latency (modify pipeline.js to configure)
--   Dockerized server component
-    -   Runs srt-live-server with sane config
-    -   Runs Node.js watchdog server that can swap between scenes on RIP using obs-websocket
--   Dockerized client component
+    -   Sent over network via [SRT](https://www.srtalliance.org/)
+-   Dockerized Jetson client component:
     -   Web UI for starting/stopping stream, statistics, configuring settings
     -   PWA, so you can add it to your home screen for easy access
+-   Dockerized server component:
+    -   Runs srt-live-server with sane config
+    -   Runs Node.js watchdog server that can swap between scenes on low bitrate using obs-websocket
 
 ## Setup
 
@@ -25,25 +22,26 @@ Code and resources for IRL streaming with the [NVIDIA Jetson Nano](https://devel
 
 _My overkill setup_
 
+![](https://i.imgur.com/5WYdFwV.jpg)
+
 You'll want:
 
--   a Jetson Nano developer kit (any revision);
-    -   Be sure to look around, I got one in an eBay auction for ~\$80.
+-   a Jetson Nano developer kit (any revision)
 -   a UVC capture card compatible with Linux/V4L2, capable of at least 1080p30 uncompressed @ YUV 4:2:2
     -   I'm currently using a Cam Link 4K, but other cards should work if you can change the GStreamer pipeline accordingly.
--   a high quality USB power bank that supports 5v @ at least 3A
-    -   I'm currently using [this one](https://smile.amazon.com/gp/product/B082PGS78L). You should look at the spec sheet / manual to confirm max current. Additionally, some will claim 3A but then shut off after sustained load.
+-   a high quality USB power bank that supports 5v @ 2.4A
+    -   I'm currently using [this one](https://smile.amazon.com/gp/product/B082PGS78L). You should look at the spec sheet / manual to confirm max current.
 -   USB WiFi adapter, or cable for phone to USB tether
 -   Micro-USB cable (ideally as thick and short as possible to prevent voltage drop)
 -   MicroSD card with Jetson image flashed, at least 32GB
 
 ### Software
 
-Both the client and server are distributed as Docker images.
+Both the client and server are distributed as Docker images. The client runs on your Nano, and the server runs on your PC/VPS.
 
 #### 1. Client
 
-First you'll want to put your Nano into 5W mode to reduce power usage and prevent crashes. Edit `/etc/nvpmodel.conf` and change `PM_CONFIG DEFAULT=` to 1.
+First you'll want to put your Nano into 5W mode to reduce power usage and prevent crashes while running off the power bank. Edit `/etc/nvpmodel.conf` and change `PM_CONFIG DEFAULT=` to 1.
 
 The Jetson Nano SD card image should come with Docker pre-installed, so simply run the below commands on your Nano. (you'll want to change `SRT_IP` to your server)
 
