@@ -5,8 +5,9 @@ Code and resources for IRL streaming with the [NVIDIA Jetson Nano](https://devel
 ## Random tech details
 
 -   HEVC video encode + Opus audio
-    -   [Full GStreamer pipeline](https://github.com/odensc/yatpack/blob/master/src/server/pipeline.js)
+    -   720p60 by default
     -   Sent over network via [SRT](https://www.srtalliance.org/)
+    -   [Full GStreamer pipeline](https://github.com/odensc/yatpack/blob/master/src/server/pipeline.js)
 -   Dockerized Jetson client component:
     -   Web UI for starting/stopping stream, statistics, configuring settings
     -   PWA, so you can add it to your home screen for easy access
@@ -16,19 +17,16 @@ Code and resources for IRL streaming with the [NVIDIA Jetson Nano](https://devel
 
 ## Setup
 
+![](https://i.imgur.com/dyWucrS.jpg)
+
 ### Hardware
-
-![](https://i.imgur.com/08WXYOd.jpg)
-
-_My overkill setup_
-
-![](https://i.imgur.com/5WYdFwV.jpg)
 
 You'll want:
 
 -   a Jetson Nano developer kit (any revision)
 -   a UVC capture card compatible with Linux/V4L2, capable of at least 1080p30 uncompressed @ YUV 4:2:2
     -   I'm currently using a Cam Link 4K, but other cards should work if you can change the GStreamer pipeline accordingly.
+-   a camera! With HDMI output for the capture card.
 -   a high quality USB power bank that supports 5v @ 2.4A
     -   I'm currently using [this one](https://smile.amazon.com/gp/product/B082PGS78L). You should look at the spec sheet / manual to confirm max current.
 -   USB WiFi adapter, or cable for phone to USB tether
@@ -73,4 +71,20 @@ sudo docker run --restart always --name yatpack-server -p 1935:1935/udp \
   odensc/yatpack-server
 ```
 
-You should install [obs-websocket](https://github.com/Palakis/obs-websocket) on your OBS machine and configure it to require a password, then edit the above environment variables accordingly.
+Edit the above environment variables accordingly to match your OBS setup (below).
+
+#### 3. OBS Machine
+
+You should install [obs-websocket](https://github.com/Palakis/obs-websocket) and configure it to require a password.
+
+Make a new scene called `Connected` and create a Media Source. This scene will show whilst the stream is on.
+
+![](https://i.imgur.com/Dqibk2x.png)
+
+![](https://i.imgur.com/nQoA1nU.png)
+
+For the input URL, use `srt://my.server.com:1935?streamid=output/live/pack` (replacing the IP), set Network Buffering to the minimum value, and enable hardware decoding.
+
+Make a new scene called `Disconnected` and put whatever graphics you want in it. This scene will show when the bitrate is too low for coherent video, or when the stream completely drops.
+
+Stream!
