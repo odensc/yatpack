@@ -23,14 +23,14 @@ Code and resources for IRL streaming with the [NVIDIA Jetson Nano](https://devel
 
 You'll want:
 
--   a Jetson Nano developer kit (any revision)
+-   a Jetson Nano 2GB developer kit
 -   a UVC capture card compatible with Linux/V4L2, capable of at least 1080p30 uncompressed @ YUV 4:2:2
     -   I'm currently using a Cam Link 4K, but other cards should work if you can change the GStreamer pipeline accordingly.
 -   a camera! With HDMI output for the capture card.
--   a high quality USB power bank that supports 5v @ 2.4A
+-   a high quality USB-C power bank that supports 5v @ 3A
     -   I'm currently using [this one](https://smile.amazon.com/gp/product/B082PGS78L). You should look at the spec sheet / manual to confirm max current.
+-   USB-C cable
 -   USB WiFi adapter, or cable for phone to USB tether
--   Micro-USB cable (ideally as thick and short as possible to prevent voltage drop)
 -   MicroSD card with Jetson image flashed, at least 32GB
 
 ### Software
@@ -38,8 +38,6 @@ You'll want:
 Both the client and server are distributed as Docker images. The client runs on your Nano, and the server runs on your PC/VPS.
 
 #### 1. Client
-
-First you'll want to put your Nano into 5W mode to reduce power usage and prevent crashes while running off the power bank. Edit `/etc/nvpmodel.conf` and change `PM_CONFIG DEFAULT=` to 1.
 
 The Jetson Nano SD card image should come with Docker pre-installed, so simply run the below commands on your Nano. (you'll want to change `SRT_IP` to your server)
 
