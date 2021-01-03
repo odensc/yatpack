@@ -1,7 +1,5 @@
 # Compile GStreamer w/ SRT support
 
-**TODO untested**
-
 ```bash
 sudo apt-get install tclsh pkg-config cmake libssl-dev build-essential python3 python3-pip python3-setuptools python3-wheel ninja-build libcairo2-dev
 pip3 install --user meson
